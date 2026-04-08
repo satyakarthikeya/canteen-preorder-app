@@ -53,6 +53,10 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
+}
+
 function createId(prefix) {
   return `${prefix}-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 }
@@ -263,11 +267,11 @@ app.post('/api/verify-student', (req, res) => {
     return res.status(400).json({ success: false, message: 'Please provide name, email and student ID.' });
   }
 
-  const emailValid = /@karunya\.edu\.in$/i.test(email.toLowerCase());
-  const idValid = /^URK\d{2}[A-Z]{2}\d{4}$/i.test(studentId.toUpperCase());
+  const emailValid = isValidEmail(email);
+  const idValid = String(studentId || '').trim().length > 0;
 
   if (!emailValid || !idValid) {
-    return res.status(400).json({ success: false, message: 'Verification failed. Use a valid Karunya college email and student ID format.' });
+    return res.status(400).json({ success: false, message: 'Verification failed. Enter a valid email and student ID.' });
   }
 
   res.json({ success: true, message: 'Student verified successfully.' });
@@ -280,11 +284,11 @@ app.post('/api/student/send-otp', async (req, res) => {
   }
 
   const emailLower = email.toLowerCase();
-  const emailValid = /@karunya\.edu\.in$/i.test(emailLower);
-  const idValid = /^URK\d{2}[A-Z]{2}\d{4}$/i.test(studentId.toUpperCase());
+  const emailValid = isValidEmail(emailLower);
+  const idValid = String(studentId || '').trim().length > 0;
 
   if (!emailValid || !idValid) {
-    return res.status(400).json({ success: false, message: 'Invalid Karunya email or student ID format.' });
+    return res.status(400).json({ success: false, message: 'Invalid email or student ID.' });
   }
 
   const students = readData('students.json');

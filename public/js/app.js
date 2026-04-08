@@ -158,7 +158,7 @@ authForm.addEventListener('submit', async event => {
 
   if (result.success) {
     show(otpSection);
-    window.kbites.updateMessage(otpMessage, 'Enter the OTP sent to your college email.');
+    window.kbites.updateMessage(otpMessage, 'Enter the OTP sent to your email.');
   }
 });
 
