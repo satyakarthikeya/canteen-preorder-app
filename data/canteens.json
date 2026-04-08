@@ -1,0 +1,20 @@
+[
+  {
+    "id": "canteen1",
+    "name": "Main College Canteen",
+    "location": "Near Block A",
+    "status": "open"
+  },
+  {
+    "id": "canteen2",
+    "name": "Tech Tower Snacks",
+    "location": "Ground Floor",
+    "status": "open"
+  },
+  {
+    "id": "canteen-1775597163342-6253",
+    "name": "nescafe",
+    "location": "beside ece department",
+    "status": "open"
+  }
+]

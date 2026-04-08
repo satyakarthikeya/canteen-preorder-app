@@ -1,0 +1,65 @@
+[
+  {
+    "id": "item1",
+    "canteenId": "canteen1",
+    "name": "Veg Sandwich",
+    "price": 45,
+    "status": "available"
+  },
+  {
+    "id": "item2",
+    "canteenId": "canteen1",
+    "name": "Masala Dosa",
+    "price": 70,
+    "status": "available"
+  },
+  {
+    "id": "item3",
+    "canteenId": "canteen1",
+    "name": "Cold Coffee",
+    "price": 50,
+    "status": "available"
+  },
+  {
+    "id": "item4",
+    "canteenId": "canteen2",
+    "name": "Paneer Wrap",
+    "price": 80,
+    "status": "available"
+  },
+  {
+    "id": "item5",
+    "canteenId": "canteen2",
+    "name": "Idli Sambhar",
+    "price": 55,
+    "status": "available"
+  },
+  {
+    "id": "item6",
+    "canteenId": "canteen2",
+    "name": "Lemon Soda",
+    "price": 35,
+    "status": "available"
+  },
+  {
+    "id": "item-1775597191489-4470",
+    "canteenId": "canteen-1775597163342-6253",
+    "name": "cold coffe",
+    "price": 70,
+    "status": "available"
+  },
+  {
+    "id": "item-1775597208456-7795",
+    "canteenId": "canteen-1775597163342-6253",
+    "name": "cappucino",
+    "price": 60,
+    "status": "available"
+  },
+  {
+    "id": "item-1775597218335-2201",
+    "canteenId": "canteen-1775597163342-6253",
+    "name": "hot chocolate",
+    "price": 80,
+    "status": "available"
+  }
+]

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College Canteen Preorder</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="food-fly-layer" aria-hidden="true">
+    <span class="food-fly left lane-1">🍔</span>
+    <span class="food-fly right lane-2">🍕</span>
+    <span class="food-fly left lane-3">🍕</span>
+    <span class="food-fly right lane-4">🍔</span>
+    <span class="food-fly left lane-5">🍔</span>
+    <span class="food-fly right lane-6">🍕</span>
+    <span class="food-fly left lane-7">🍟</span>
+    <span class="food-fly right lane-8">🌮</span>
+    <span class="food-fly left lane-9">🌯</span>
+    <span class="food-fly right lane-10">🥪</span>
+    <span class="food-fly left lane-2">🍩</span>
+    <span class="food-fly right lane-3">🧋</span>
+    <span class="food-fly left lane-4">🍗</span>
+    <span class="food-fly right lane-5">🍜</span>
+  </div>
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>K-Bites Campus Super App</h1>
+        <p>Preorder food, skip queues, and track pickup live across every college canteen.</p>
+      </div>
+      <button id="theme-toggle" class="ghost-btn" type="button">Toggle Theme</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel" id="welcome-panel">
+      <h2>Welcome to K-Bites</h2>
+      <p>Your college canteen ordering system for faster pickup and no queue wait.</p>
+      <button id="enter-btn">Enter K-Bites</button>
+    </section>
+
+    <section class="panel hidden" id="auth-panel">
+      <h2>Student Login / Signup</h2>
+      <form id="student-auth-form">
+        <label>Name<input type="text" id="student-name" required placeholder="Student name" /></label>
+        <label>College Email<input type="email" id="student-email" required placeholder="yourname@karunya.edu.in" /></label>
+        <label>Student ID<input type="text" id="student-id" required placeholder="URKYYCCNNNN" /></label>
+        <button type="submit" id="send-otp-btn">Send OTP</button>
+      </form>
+      <button type="button" id="test-mail-btn" class="ghost-btn">Send Test Email</button>
+      <div id="otp-section" class="hidden">
+        <label>Enter OTP<input type="text" id="otp-code" placeholder="123456" /></label>
+        <button id="verify-otp-btn">Verify OTP</button>
+        <div class="message" id="otp-message"></div>
+      </div>
+      <div class="message" id="auth-message"></div>
+    </section>
+
+    <section class="panel hidden" id="student-dashboard">
+      <h2>Student Dashboard</h2>
+      <p id="dashboard-welcome"></p>
+      <div id="dashboard-info"></div>
+      <button type="button" id="browse-canteens-btn">Browse Canteens</button>
+      <div class="small-panel">
+        <h3>Quick Reorder</h3>
+        <div id="quick-reorder"></div>
+      </div>
+      <div class="small-panel">
+        <h3>Previous Orders</h3>
+        <div id="dashboard-orders"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="status-panel">
+      <h2>How it works</h2>
+      <ul>
+        <li>Enter K-Bites, then login with Karunya email and student ID.</li>
+        <li>Receive an OTP and verify your account.</li>
+        <li>Use Browse Canteens to open the separate canteen, menu, and cart pages.</li>
+        <li>Canteen owners manage open/closed status and availability.</li>
+      </ul>
+      <p>Owner and admin tools are internal and shared only with authorized staff.</p>
+    </section>
+  </main>
+
+  <script src="js/student-common.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

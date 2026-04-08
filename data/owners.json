@@ -1,0 +1,23 @@
+[
+  {
+    "id": "owner1",
+    "username": "canteen1",
+    "password": "password123",
+    "name": "Main Canteen Owner",
+    "canteenId": "canteen1"
+  },
+  {
+    "id": "owner2",
+    "username": "canteen2",
+    "password": "password123",
+    "name": "Tech Tower Owner",
+    "canteenId": "canteen2"
+  },
+  {
+    "id": "owner-1775597163342-6171",
+    "username": "jaideep_sai",
+    "password": "deep@098",
+    "name": "jai deep sai",
+    "canteenId": "canteen-1775597163342-6253"
+  }
+]

@@ -1,0 +1,71 @@
+[
+  {
+    "id": "ORD-1775592627145",
+    "student": {
+      "id": "STU-1775592593812",
+      "name": "jai deep",
+      "email": "manikondajaideep@karunya.edu.in",
+      "studentId": "URK25AI1071"
+    },
+    "canteenId": "canteen1",
+    "items": [
+      {
+        "id": "item3",
+        "name": "Cold Coffee",
+        "price": 50,
+        "quantity": 1
+      }
+    ],
+    "paymentMethod": "UPI",
+    "createdAt": "2026-04-07T20:10:27.145Z",
+    "status": "preparing"
+  },
+  {
+    "id": "ORD-1775597097574",
+    "orderToken": "TK3905",
+    "student": {
+      "id": "STU-1775592593812",
+      "name": "jai deep",
+      "email": "manikondajaideep@karunya.edu.in",
+      "studentId": "URK25AI1071"
+    },
+    "canteenId": "canteen1",
+    "items": [
+      {
+        "id": "item3",
+        "name": "Cold Coffee",
+        "price": 50,
+        "quantity": 1
+      }
+    ],
+    "pickupSlot": "ASAP",
+    "paymentMethod": "Cash",
+    "createdAt": "2026-04-07T21:24:57.574Z",
+    "status": "accepted"
+  },
+  {
+    "id": "ORD-1775597306318",
+    "orderToken": "TK3490",
+    "student": {
+      "id": "STU-1775592593812",
+      "name": "jai deep",
+      "email": "manikondajaideep@karunya.edu.in",
+      "studentId": "URK25AI1071"
+    },
+    "canteenId": "canteen-1775597163342-6253",
+    "items": [
+      {
+        "id": "item-1775597191489-4470",
+        "name": "cold coffe",
+        "price": 70,
+        "quantity": 1
+      }
+    ],
+    "pickupSlot": "ASAP",
+    "paymentMethod": "Cash",
+    "createdAt": "2026-04-07T21:28:26.318Z",
+    "status": "picked up",
+    "readyAt": "2026-04-07T21:29:05.238Z",
+    "pickedUpAt": "2026-04-07T21:29:15.437Z"
+  }
+]
