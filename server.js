@@ -715,6 +715,92 @@ app.post('/api/owner/update-canteen', (req, res) => {
   res.json({ success: true, message: 'Canteen details updated successfully.', canteen: canteens[canteenIndex] });
 });
 
+app.get('/api/owner/payment-settings', (req, res) => {
+  const { ownerId } = req.query;
+  if (!ownerId) {
+    return res.status(400).json({ success: false, message: 'Owner ID is required.' });
+  }
+
+  const owners = readData('owners.json');
+  const owner = owners.find(o => o.id === ownerId);
+  if (!owner) {
+    return res.status(401).json({ success: false, message: 'Owner not found.' });
+  }
+
+  res.json({
+    success: true,
+    phonePeUpiId: owner.phonePeUpiId || '',
+    phonePeQrImageUrl: owner.phonePeQrImageUrl || ''
+  });
+});
+
+app.post('/api/owner/update-payment-settings', (req, res) => {
+  const { ownerId, phonePeUpiId, phonePeQrImageUrl } = req.body;
+  if (!ownerId) {
+    return res.status(400).json({ success: false, message: 'Owner ID is required.' });
+  }
+
+  const upiId = String(phonePeUpiId || '').trim();
+  const qrImageUrl = String(phonePeQrImageUrl || '').trim();
+
+  if (!upiId && !qrImageUrl) {
+    return res.status(400).json({ success: false, message: 'Add UPI ID or QR image URL.' });
+  }
+
+  if (upiId && !upiId.includes('@')) {
+    return res.status(400).json({ success: false, message: 'Invalid UPI ID format.' });
+  }
+
+  if (qrImageUrl) {
+    try {
+      const parsed = new URL(qrImageUrl);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error('invalid_protocol');
+      }
+    } catch {
+      return res.status(400).json({ success: false, message: 'Invalid QR image URL.' });
+    }
+  }
+
+  const owners = readData('owners.json');
+  const ownerIndex = owners.findIndex(o => o.id === ownerId);
+  if (ownerIndex === -1) {
+    return res.status(401).json({ success: false, message: 'Owner not found.' });
+  }
+
+  owners[ownerIndex].phonePeUpiId = upiId;
+  owners[ownerIndex].phonePeQrImageUrl = qrImageUrl;
+  writeData('owners.json', owners);
+
+  res.json({
+    success: true,
+    message: 'Payment scanner settings updated successfully.',
+    settings: {
+      phonePeUpiId: owners[ownerIndex].phonePeUpiId,
+      phonePeQrImageUrl: owners[ownerIndex].phonePeQrImageUrl
+    }
+  });
+});
+
+app.get('/api/canteen/payment-settings', (req, res) => {
+  const { canteenId } = req.query;
+  if (!canteenId) {
+    return res.status(400).json({ success: false, message: 'Canteen ID is required.' });
+  }
+
+  const owners = readData('owners.json');
+  const owner = owners.find(item => item.canteenId === canteenId);
+  if (!owner) {
+    return res.json({ success: true, phonePeUpiId: '', phonePeQrImageUrl: '' });
+  }
+
+  res.json({
+    success: true,
+    phonePeUpiId: owner.phonePeUpiId || '',
+    phonePeQrImageUrl: owner.phonePeQrImageUrl || ''
+  });
+});
+
 app.post('/api/owner/update-item', (req, res) => {
   const { ownerId, itemId, status } = req.body;
   const owners = readData('owners.json');

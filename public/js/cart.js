@@ -4,6 +4,8 @@ const pickupSlot = document.getElementById('pickup-slot');
 const paymentMethod = document.getElementById('payment-method');
 const phonePePanel = document.getElementById('phonepe-panel');
 const phonePeReference = document.getElementById('phonepe-reference');
+const phonePeQr = document.getElementById('phonepe-qr');
+const phonePeUpiNote = document.getElementById('phonepe-upi-note');
 const placeOrderBtn = document.getElementById('place-order-btn');
 const orderMessage = document.getElementById('order-message');
 const cartCanteenTitle = document.getElementById('cart-canteen-title');
@@ -12,11 +14,40 @@ let verifiedStudent = window.kbites.getStudent();
 let selectedCanteenId = window.kbites.getSelectedCanteen();
 let cart = window.kbites.getCart();
 let canteens = [];
+let canteenPaymentSettings = { phonePeUpiId: '', phonePeQrImageUrl: '' };
+
+function buildPhonePeQrFromUpi(upiId) {
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('K-Bites')}`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
+}
+
+async function loadCanteenPaymentSettings() {
+  if (!selectedCanteenId) return;
+  try {
+    const res = await fetch(`/api/canteen/payment-settings?canteenId=${encodeURIComponent(selectedCanteenId)}`);
+    const data = await res.json();
+    canteenPaymentSettings = {
+      phonePeUpiId: data.phonePeUpiId || '',
+      phonePeQrImageUrl: data.phonePeQrImageUrl || ''
+    };
+  } catch {
+    canteenPaymentSettings = { phonePeUpiId: '', phonePeQrImageUrl: '' };
+  }
+}
 
 function updatePaymentPanel() {
   const isPhonePe = paymentMethod.value === 'PhonePe';
   if (!phonePePanel) return;
   if (isPhonePe) {
+    const { phonePeUpiId, phonePeQrImageUrl } = canteenPaymentSettings;
+    if (phonePeQr && phonePeQrImageUrl) {
+      phonePeQr.src = phonePeQrImageUrl;
+    } else if (phonePeQr && phonePeUpiId) {
+      phonePeQr.src = buildPhonePeQrFromUpi(phonePeUpiId);
+    }
+    if (phonePeUpiNote) {
+      phonePeUpiNote.textContent = phonePeUpiId ? `Pay to UPI: ${phonePeUpiId}` : 'Owner has not configured UPI ID yet.';
+    }
     phonePePanel.classList.remove('hidden');
   } else {
     phonePePanel.classList.add('hidden');
@@ -85,6 +116,7 @@ async function init() {
   }
 
   cartCanteenTitle.textContent = `${canteen.name} • ${canteen.location}`;
+  await loadCanteenPaymentSettings();
   renderCart();
   updatePaymentPanel();
 }
@@ -101,6 +133,11 @@ placeOrderBtn.addEventListener('click', async () => {
 
   if (paymentMethod.value === 'PhonePe' && !String(phonePeReference?.value || '').trim()) {
     window.kbites.updateMessage(orderMessage, 'Enter PhonePe transaction ID after payment.', false);
+    return;
+  }
+
+  if (paymentMethod.value === 'PhonePe' && !canteenPaymentSettings.phonePeUpiId && !canteenPaymentSettings.phonePeQrImageUrl) {
+    window.kbites.updateMessage(orderMessage, 'Owner has not configured PhonePe scanner yet. Choose Cash for now.', false);
     return;
   }
 

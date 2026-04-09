@@ -14,6 +14,9 @@ const importExtractedMenuBtn = document.getElementById('import-extracted-menu-bt
 const updateCanteenForm = document.getElementById('owner-update-canteen-form');
 const updateCanteenNameInput = document.getElementById('update-canteen-name');
 const updateCanteenLocationInput = document.getElementById('update-canteen-location');
+const ownerPaymentForm = document.getElementById('owner-payment-form');
+const phonePeUpiIdInput = document.getElementById('phonepe-upi-id');
+const phonePeQrUrlInput = document.getElementById('phonepe-qr-url');
 const ownerBestSeller = document.getElementById('owner-bestseller');
 const ownerMetrics = document.getElementById('owner-metrics');
 const ownerForm = document.getElementById('owner-login-form');
@@ -135,7 +138,22 @@ ownerForm.addEventListener('submit', async event => {
 });
 
 async function refreshDashboard() {
-  await Promise.all([loadCanteenStatus(), loadOwnerMenu(), loadOrders(), loadBestSellerAnalytics(), loadMetrics()]);
+  await Promise.all([
+    loadCanteenStatus(),
+    loadOwnerPaymentSettings(),
+    loadOwnerMenu(),
+    loadOrders(),
+    loadBestSellerAnalytics(),
+    loadMetrics()
+  ]);
+}
+
+async function loadOwnerPaymentSettings() {
+  if (!currentOwner) return;
+  const res = await fetch(`/api/owner/payment-settings?ownerId=${encodeURIComponent(currentOwner.ownerId)}`);
+  const data = await res.json();
+  phonePeUpiIdInput.value = data.phonePeUpiId || '';
+  phonePeQrUrlInput.value = data.phonePeQrImageUrl || '';
 }
 
 async function loadMetrics() {
@@ -415,6 +433,34 @@ updateCanteenForm.addEventListener('submit', async event => {
   setMessageStyles(ownerMessage, result.success);
   if (result.success) {
     await loadCanteenStatus();
+  }
+});
+
+ownerPaymentForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (!currentOwner) {
+    ownerMessage.textContent = 'Please login before updating payment settings.';
+    setMessageStyles(ownerMessage, false);
+    return;
+  }
+
+  const phonePeUpiId = phonePeUpiIdInput.value.trim();
+  const phonePeQrImageUrl = phonePeQrUrlInput.value.trim();
+
+  const res = await fetch('/api/owner/update-payment-settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ownerId: currentOwner.ownerId,
+      phonePeUpiId,
+      phonePeQrImageUrl
+    })
+  });
+  const result = await res.json();
+  ownerMessage.textContent = result.message;
+  setMessageStyles(ownerMessage, result.success);
+  if (result.success) {
+    await loadOwnerPaymentSettings();
   }
 });
 
