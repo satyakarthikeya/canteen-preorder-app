@@ -43,8 +43,22 @@
       <label>Payment Method
         <select id="payment-method">
           <option value="Cash">Cash</option>
+          <option value="PhonePe">PhonePe</option>
         </select>
       </label>
+      <div id="phonepe-panel" class="small-panel hidden">
+        <h3>PhonePe Payment</h3>
+        <p>Scan this QR in PhonePe and complete payment before placing order.</p>
+        <img
+          id="phonepe-qr"
+          src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi%3A%2F%2Fpay%3Fpa%3Dkbites%40ybl%26pn%3DK-Bites%26am%3D1"
+          alt="PhonePe UPI QR"
+          style="width:220px;max-width:100%;border-radius:12px;border:1px solid rgba(0,0,0,0.12);"
+        />
+        <label>PhonePe Transaction ID
+          <input type="text" id="phonepe-reference" placeholder="Enter UTR / transaction ID" />
+        </label>
+      </div>
       <button id="place-order-btn">Place Order</button>
       <div class="message" id="order-message"></div>
     </section>

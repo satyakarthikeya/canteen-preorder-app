@@ -2,6 +2,13 @@ const enterBtn = document.getElementById('enter-btn');
 const browseCanteensBtn = document.getElementById('browse-canteens-btn');
 const themeToggleBtn = document.getElementById('theme-toggle');
 const welcomePanel = document.getElementById('welcome-panel');
+const customerDetailsPanel = document.getElementById('customer-details-panel');
+const customerDetailsForm = document.getElementById('customer-details-form');
+const customerNameInput = document.getElementById('customer-name');
+const customerPhoneInput = document.getElementById('customer-phone');
+const customerCollegeIdInput = document.getElementById('customer-college-id');
+const customerEmailInput = document.getElementById('customer-email');
+const customerDetailsMessage = document.getElementById('customer-details-message');
 const studentDashboard = document.getElementById('student-dashboard');
 const dashboardWelcome = document.getElementById('dashboard-welcome');
 const dashboardInfo = document.getElementById('dashboard-info');
@@ -24,19 +31,43 @@ function hide(element) {
   element.classList.add('hidden');
 }
 
-function ensureGuestStudent() {
+function normalizePhone(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function prefillCustomerDetails() {
   const existing = window.kbites.getStudent();
-  if (existing) return existing;
+  if (!existing) return;
+  customerNameInput.value = existing.name || '';
+  customerPhoneInput.value = existing.phone || '';
+  customerCollegeIdInput.value = existing.studentId || '';
+  customerEmailInput.value = existing.email && !String(existing.email).endsWith('@kbites.local') ? existing.email : '';
+}
+
+function buildStudentFromForm() {
+  const name = customerNameInput.value.trim();
+  const phone = normalizePhone(customerPhoneInput.value);
+  const studentId = customerCollegeIdInput.value.trim();
+  const emailInput = customerEmailInput.value.trim().toLowerCase();
+
+  if (!name || !phone || !studentId) {
+    window.kbites.updateMessage(customerDetailsMessage, 'Please enter name, phone number, and college ID.', false);
+    return null;
+  }
+  if (phone.length < 10) {
+    window.kbites.updateMessage(customerDetailsMessage, 'Please enter a valid phone number.', false);
+    return null;
+  }
 
   const suffix = Date.now();
-  const guest = {
-    id: `GUEST-${suffix}`,
-    name: 'Guest Student',
-    email: `guest${suffix}@kbites.local`,
-    studentId: `GUEST${String(suffix).slice(-4)}`
+  const existing = window.kbites.getStudent();
+  return {
+    id: existing?.id || `STU-${suffix}`,
+    name,
+    phone,
+    email: emailInput || `guest${suffix}@kbites.local`,
+    studentId
   };
-  window.kbites.setStudent(guest);
-  return guest;
 }
 
 function requestNotificationPermission() {
@@ -148,14 +179,30 @@ function updateDashboard() {
 }
 
 enterBtn.addEventListener('click', () => {
-  verifiedStudent = ensureGuestStudent();
+  hide(welcomePanel);
+  show(customerDetailsPanel);
+  prefillCustomerDetails();
+  window.kbites.updateMessage(customerDetailsMessage, '');
+});
+
+customerDetailsForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const student = buildStudentFromForm();
+  if (!student) return;
+  verifiedStudent = student;
+  window.kbites.setStudent(student);
   requestNotificationPermission();
   window.location.href = 'canteens.html';
 });
 
 browseCanteensBtn.addEventListener('click', () => {
   if (!verifiedStudent) {
-    verifiedStudent = ensureGuestStudent();
+    hide(studentDashboard);
+    hide(welcomePanel);
+    show(customerDetailsPanel);
+    prefillCustomerDetails();
+    window.kbites.updateMessage(customerDetailsMessage, 'Please enter customer details first.', false);
+    return;
   }
   window.location.href = 'canteens.html';
 });
@@ -166,9 +213,11 @@ window.kbites.applyTheme();
 
 if (verifiedStudent) {
   hide(welcomePanel);
+  hide(customerDetailsPanel);
   show(studentDashboard);
   loadCanteens().then(updateDashboard);
   startOrderPolling();
 } else {
+  hide(customerDetailsPanel);
   hide(studentDashboard);
 }

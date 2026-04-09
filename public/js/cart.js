@@ -2,6 +2,8 @@ const cartItems = document.getElementById('cart-items');
 const cartTotal = document.getElementById('cart-total');
 const pickupSlot = document.getElementById('pickup-slot');
 const paymentMethod = document.getElementById('payment-method');
+const phonePePanel = document.getElementById('phonepe-panel');
+const phonePeReference = document.getElementById('phonepe-reference');
 const placeOrderBtn = document.getElementById('place-order-btn');
 const orderMessage = document.getElementById('order-message');
 const cartCanteenTitle = document.getElementById('cart-canteen-title');
@@ -10,6 +12,17 @@ let verifiedStudent = window.kbites.getStudent();
 let selectedCanteenId = window.kbites.getSelectedCanteen();
 let cart = window.kbites.getCart();
 let canteens = [];
+
+function updatePaymentPanel() {
+  const isPhonePe = paymentMethod.value === 'PhonePe';
+  if (!phonePePanel) return;
+  if (isPhonePe) {
+    phonePePanel.classList.remove('hidden');
+  } else {
+    phonePePanel.classList.add('hidden');
+    if (phonePeReference) phonePeReference.value = '';
+  }
+}
 
 function renderCart() {
   if (!cart.length) {
@@ -73,6 +86,7 @@ async function init() {
 
   cartCanteenTitle.textContent = `${canteen.name} • ${canteen.location}`;
   renderCart();
+  updatePaymentPanel();
 }
 
 placeOrderBtn.addEventListener('click', async () => {
@@ -85,6 +99,11 @@ placeOrderBtn.addEventListener('click', async () => {
     return;
   }
 
+  if (paymentMethod.value === 'PhonePe' && !String(phonePeReference?.value || '').trim()) {
+    window.kbites.updateMessage(orderMessage, 'Enter PhonePe transaction ID after payment.', false);
+    return;
+  }
+
   window.kbites.updateMessage(orderMessage, 'Placing order...');
   const res = await fetch('/api/order', {
     method: 'POST',
@@ -94,7 +113,8 @@ placeOrderBtn.addEventListener('click', async () => {
       canteenId: selectedCanteenId,
       items: cart,
       pickupSlot: pickupSlot.value,
-      paymentMethod: paymentMethod.value
+      paymentMethod: paymentMethod.value,
+      phonePeReference: String(phonePeReference?.value || '').trim()
     })
   });
   const result = await res.json();
@@ -107,4 +127,5 @@ placeOrderBtn.addEventListener('click', async () => {
 });
 
 window.kbites.applyTheme();
+paymentMethod.addEventListener('change', updatePaymentPanel);
 init();

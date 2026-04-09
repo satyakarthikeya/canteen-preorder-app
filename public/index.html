@@ -40,6 +40,19 @@
       <button id="enter-btn">Enter K-Bites</button>
     </section>
 
+    <section class="panel hidden" id="customer-details-panel">
+      <h2>Customer Details</h2>
+      <p>Please enter your details before selecting a canteen.</p>
+      <form id="customer-details-form">
+        <label>Name<input type="text" id="customer-name" required placeholder="Your name" /></label>
+        <label>Phone Number<input type="tel" id="customer-phone" required placeholder="10-digit phone number" /></label>
+        <label>College ID<input type="text" id="customer-college-id" required placeholder="College ID" /></label>
+        <label>Email (optional)<input type="email" id="customer-email" placeholder="you@example.com" /></label>
+        <button type="submit">Continue to Canteens</button>
+      </form>
+      <div class="message" id="customer-details-message"></div>
+    </section>
+
     <section class="panel hidden" id="student-dashboard">
       <h2>Student Dashboard</h2>
       <p id="dashboard-welcome"></p>

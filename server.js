@@ -423,8 +423,9 @@ app.post('/api/order', (req, res) => {
     return res.status(400).json({ success: false, message: 'Order must include student details, canteen, and items.' });
   }
 
-  if (paymentMethod && paymentMethod !== 'Cash') {
-    return res.status(400).json({ success: false, message: 'Only Cash payment is enabled right now.' });
+  const allowedPaymentMethods = ['Cash', 'PhonePe'];
+  if (paymentMethod && !allowedPaymentMethods.includes(paymentMethod)) {
+    return res.status(400).json({ success: false, message: 'Invalid payment method selected.' });
   }
 
   const canteens = readData('canteens.json');
@@ -451,7 +452,7 @@ app.post('/api/order', (req, res) => {
     canteenId,
     items,
     pickupSlot: pickupSlot || 'ASAP',
-    paymentMethod: 'Cash',
+    paymentMethod: paymentMethod || 'Cash',
     createdAt: new Date().toISOString(),
     status: 'accepted'
   };
