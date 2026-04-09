@@ -1,23 +1,12 @@
 const enterBtn = document.getElementById('enter-btn');
 const browseCanteensBtn = document.getElementById('browse-canteens-btn');
 const themeToggleBtn = document.getElementById('theme-toggle');
-const authPanel = document.getElementById('auth-panel');
 const welcomePanel = document.getElementById('welcome-panel');
 const studentDashboard = document.getElementById('student-dashboard');
 const dashboardWelcome = document.getElementById('dashboard-welcome');
 const dashboardInfo = document.getElementById('dashboard-info');
 const dashboardOrders = document.getElementById('dashboard-orders');
 const quickReorder = document.getElementById('quick-reorder');
-const authForm = document.getElementById('student-auth-form');
-const testMailBtn = document.getElementById('test-mail-btn');
-const otpSection = document.getElementById('otp-section');
-const otpInput = document.getElementById('otp-code');
-const verifyOtpBtn = document.getElementById('verify-otp-btn');
-const authMessage = document.getElementById('auth-message');
-const otpMessage = document.getElementById('otp-message');
-const studentNameInput = document.getElementById('student-name');
-const studentEmailInput = document.getElementById('student-email');
-const studentIdInput = document.getElementById('student-id');
 
 let verifiedStudent = window.kbites.getStudent();
 let studentOrders = [];
@@ -33,6 +22,21 @@ function show(element) {
 function hide(element) {
   if (!element) return;
   element.classList.add('hidden');
+}
+
+function ensureGuestStudent() {
+  const existing = window.kbites.getStudent();
+  if (existing) return existing;
+
+  const suffix = Date.now();
+  const guest = {
+    id: `GUEST-${suffix}`,
+    name: 'Guest Student',
+    email: `guest${suffix}@kbites.local`,
+    studentId: `GUEST${String(suffix).slice(-4)}`
+  };
+  window.kbites.setStudent(guest);
+  return guest;
 }
 
 function requestNotificationPermission() {
@@ -99,7 +103,8 @@ function renderQuickReorder() {
 async function loadStudentOrders() {
   if (!verifiedStudent) return;
   const res = await fetch(`/api/student/orders?email=${encodeURIComponent(verifiedStudent.email)}`);
-  studentOrders = await res.json();
+  const payload = await res.json();
+  studentOrders = Array.isArray(payload) ? payload : [];
   localStorage.setItem('kbites_orders_cache', JSON.stringify(studentOrders));
 
   studentOrders.forEach(order => {
@@ -137,87 +142,20 @@ function updateDashboard() {
   dashboardInfo.innerHTML = `
     <p><strong>Email:</strong> ${verifiedStudent.email}</p>
     <p><strong>Student ID:</strong> ${verifiedStudent.studentId}</p>
-    <p>Use Browse Canteens to move to the next page.</p>
+    <p>Use Browse Canteens to start ordering instantly.</p>
   `;
   loadStudentOrders();
 }
 
-authForm.addEventListener('submit', async event => {
-  event.preventDefault();
-  const name = studentNameInput.value.trim();
-  const email = studentEmailInput.value.trim();
-  const studentId = studentIdInput.value.trim();
-
-  const res = await fetch('/api/student/send-otp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, studentId })
-  });
-  const result = await res.json();
-  window.kbites.updateMessage(authMessage, result.message, result.success);
-
-  if (result.success) {
-    show(otpSection);
-    window.kbites.updateMessage(otpMessage, 'Enter the OTP sent to your email.');
-  }
-});
-
-testMailBtn.addEventListener('click', async () => {
-  const email = studentEmailInput.value.trim();
-  const name = studentNameInput.value.trim();
-  if (!email) {
-    window.kbites.updateMessage(authMessage, 'Enter email first to send test mail.', false);
-    return;
-  }
-
-  window.kbites.updateMessage(authMessage, 'Sending test email...');
-  const res = await fetch('/api/student/test-email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, name })
-  });
-  const result = await res.json();
-  window.kbites.updateMessage(authMessage, result.message, result.success);
-});
-
-verifyOtpBtn.addEventListener('click', async () => {
-  const email = studentEmailInput.value.trim();
-  const otp = otpInput.value.trim();
-  if (!email || !otp) {
-    window.kbites.updateMessage(otpMessage, 'Enter both email and OTP.', false);
-    return;
-  }
-
-  const res = await fetch('/api/student/verify-otp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, otp })
-  });
-  const result = await res.json();
-  window.kbites.updateMessage(otpMessage, result.message, result.success);
-
-  if (result.success) {
-    verifiedStudent = result.student;
-    window.kbites.setStudent(verifiedStudent);
-    requestNotificationPermission();
-    hide(authPanel);
-    show(studentDashboard);
-    await loadCanteens();
-    updateDashboard();
-    startOrderPolling();
-    window.kbites.updateMessage(authMessage, `Welcome, ${verifiedStudent.name}! Use Browse Canteens to start ordering.`);
-  }
-});
-
 enterBtn.addEventListener('click', () => {
-  hide(welcomePanel);
-  show(authPanel);
+  verifiedStudent = ensureGuestStudent();
+  requestNotificationPermission();
+  window.location.href = 'canteens.html';
 });
 
 browseCanteensBtn.addEventListener('click', () => {
   if (!verifiedStudent) {
-    window.kbites.updateMessage(authMessage, 'Please complete login first.', false);
-    return;
+    verifiedStudent = ensureGuestStudent();
   }
   window.location.href = 'canteens.html';
 });
@@ -228,7 +166,6 @@ window.kbites.applyTheme();
 
 if (verifiedStudent) {
   hide(welcomePanel);
-  hide(authPanel);
   show(studentDashboard);
   loadCanteens().then(updateDashboard);
   startOrderPolling();
